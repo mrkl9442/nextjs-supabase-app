@@ -5,12 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 명령어
 
 ```bash
-npm run dev       # 개발 서버 시작 (localhost:3000)
-npm run build     # 프로덕션 빌드
-npm run lint      # ESLint 검사
+npm run dev          # 개발 서버 시작 (localhost:3000)
+npm run build        # 프로덕션 빌드
+npm run typecheck    # TypeScript 타입 검사
+npm run lint         # ESLint 검사
+npm run lint:fix     # ESLint 자동 수정
+npm run format       # Prettier 포맷팅
+npm run format:check # Prettier 포맷 검사
+npm run check-all    # typecheck + lint + format:check 일괄 실행
 ```
 
 shadcn/ui 컴포넌트 추가:
+
 ```bash
 npx shadcn@latest add [component-name]
 ```
