@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { DUMMY_EVENT } from "@/lib/fixtures";
+import { createClient } from "@/lib/supabase/server";
+import { EventTabs } from "@/components/event-tabs";
 
 interface Props {
   children: React.ReactNode;
@@ -8,7 +8,13 @@ interface Props {
 
 export default async function EventLayout({ children, params }: Props) {
   const { id } = await params;
-  const event = { ...DUMMY_EVENT, id };
+
+  const supabase = await createClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("title")
+    .eq("id", id)
+    .maybeSingle();
 
   const tabs = [
     { href: `/events/${id}`, label: "상세" },
@@ -21,20 +27,12 @@ export default async function EventLayout({ children, params }: Props) {
     <div>
       <div className="border-b bg-muted/40">
         <div className="mx-auto max-w-screen-md px-4 pt-4">
-          <p className="mb-3 text-sm font-semibold text-muted-foreground">
-            {event.title}
-          </p>
-          <nav className="flex gap-1">
-            {tabs.map((tab) => (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className="rounded-t-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-              >
-                {tab.label}
-              </Link>
-            ))}
-          </nav>
+          {event && (
+            <p className="mb-3 truncate text-sm font-semibold text-muted-foreground">
+              {event.title}
+            </p>
+          )}
+          <EventTabs tabs={tabs} />
         </div>
       </div>
       {children}

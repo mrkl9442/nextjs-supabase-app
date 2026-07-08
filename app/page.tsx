@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const isLoggedIn = !!data?.claims;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-12 px-4">
       <div className="flex flex-col items-center gap-4 text-center">
@@ -33,7 +38,7 @@ export default function LandingPage() {
         </div>
 
         <Button asChild size="lg">
-          <Link href="/auth/login">시작하기</Link>
+          <Link href={isLoggedIn ? "/dashboard" : "/auth/login"}>시작하기</Link>
         </Button>
       </div>
     </main>

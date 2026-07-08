@@ -47,15 +47,19 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const pathname = request.nextUrl.pathname;
+  const isPublic =
+    pathname === "/" ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/login") ||
+    // 이벤트 상세 페이지: 공유 링크 비로그인 접근 허용 (/events/new 제외)
+    (/^\/events\/[^/]+$/.test(pathname) && pathname !== "/events/new");
+
+  if (!isPublic && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
+    // 로그인 후 원래 페이지로 돌아올 수 있도록 next 파라미터 전달
+    url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 

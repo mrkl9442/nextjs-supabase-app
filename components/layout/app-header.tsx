@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AuthButton } from "@/components/auth-button";
 
 export function AppHeader() {
@@ -8,7 +9,11 @@ export function AppHeader() {
         <Link href="/" className="text-lg font-bold tracking-tight">
           모임
         </Link>
-        <AuthButton />
+        <Suspense
+          fallback={<div className="h-8 w-24 animate-pulse rounded bg-muted" />}
+        >
+          <AuthButton />
+        </Suspense>
       </div>
     </header>
   );

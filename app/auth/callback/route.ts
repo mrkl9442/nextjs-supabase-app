@@ -1,33 +1,37 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const oauthError = searchParams.get("error");
-  const oauthErrorDescription = searchParams.get("error_description");
-  const next = searchParams.get("next") ?? "/protected";
-
-  if (oauthError) {
-    return NextResponse.redirect(
-      `${origin}/auth/error?error=${encodeURIComponent(oauthErrorDescription ?? oauthError)}`
-    );
-  }
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") ?? "/dashboard";
 
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
-    }
-
-    return NextResponse.redirect(
-      `${origin}/auth/error?error=${encodeURIComponent(error.message)}`
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          },
+        },
+      }
     );
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      return NextResponse.redirect(new URL(next, requestUrl.origin));
+    }
   }
 
-  return NextResponse.redirect(
-    `${origin}/auth/error?error=${encodeURIComponent("인증 코드를 받지 못했습니다.")}`
-  );
+  return NextResponse.redirect(new URL("/auth/error", requestUrl.origin));
 }
