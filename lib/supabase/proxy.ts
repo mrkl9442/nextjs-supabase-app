@@ -47,6 +47,23 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  // 정지된 계정은 세션을 즉시 종료하고 로그인 페이지로 되돌린다.
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_suspended")
+      .eq("id", user.sub)
+      .single();
+
+    if (profile?.is_suspended) {
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("suspended", "1");
+      return NextResponse.redirect(url);
+    }
+  }
+
   const pathname = request.nextUrl.pathname;
   const isPublic =
     pathname === "/" ||

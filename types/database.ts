@@ -24,11 +24,16 @@ export type Profile = {
   avatar_url: string | null;
   website: string | null;
   bio: string | null;
+  role: "user" | "admin";
+  is_suspended: boolean;
   created_at: string;
   updated_at: string;
 };
 
-export type ProfileUpdate = Omit<Profile, "id" | "created_at" | "updated_at">;
+export type ProfileUpdate = Omit<
+  Profile,
+  "id" | "created_at" | "updated_at" | "role" | "is_suspended"
+>;
 
 export type Database = {
   public: {
