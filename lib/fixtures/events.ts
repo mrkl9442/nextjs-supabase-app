@@ -11,6 +11,7 @@ export const DUMMY_EVENTS: Event[] = [
       "매월 첫째 주 토요일 수영 모임입니다. 준비물: 수영모, 수경 필수",
     capacity: 15,
     fee: 15000,
+    cover_image_url: null,
     created_at: "2026-06-20T09:00:00",
   },
   {
@@ -22,6 +23,7 @@ export const DUMMY_EVENTS: Event[] = [
     description: "같이 운동하고 단백질 쉐이크 한 잔 해요!",
     capacity: 8,
     fee: 0,
+    cover_image_url: null,
     created_at: "2026-06-22T14:00:00",
   },
   {
@@ -33,6 +35,7 @@ export const DUMMY_EVENTS: Event[] = [
     description: null,
     capacity: 6,
     fee: 12000,
+    cover_image_url: null,
     created_at: "2026-06-25T11:00:00",
   },
 ];

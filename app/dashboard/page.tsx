@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,13 +26,14 @@ export default async function DashboardPage({ searchParams }: Props) {
     event_date: string;
     location: string | null;
     fee: number | null;
+    cover_image_url: string | null;
   };
   let events: EventRow[] = [];
 
   if (isJoined) {
     const { data: rows } = await supabase
       .from("attendances")
-      .select("events(id, title, event_date, location, fee)")
+      .select("events(id, title, event_date, location, fee, cover_image_url)")
       .eq("user_id", userId)
       .eq("status", "attending");
 
@@ -41,7 +43,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   } else {
     const { data: rows } = await supabase
       .from("events")
-      .select("id, title, event_date, location, fee")
+      .select("id, title, event_date, location, fee, cover_image_url")
       .eq("host_id", userId)
       .order("event_date", { ascending: false });
 
@@ -74,22 +76,37 @@ export default async function DashboardPage({ searchParams }: Props) {
         <div className="flex flex-col gap-3">
           {events.map((event) => (
             <Link key={event.id} href={`/events/${event.id}`}>
-              <Card className="cursor-pointer transition-colors hover:bg-muted/50">
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-base">{event.title}</CardTitle>
-                    <Badge variant="secondary">
-                      {isJoined ? "참여" : "주최"}
-                    </Badge>
+              <Card className="flex cursor-pointer overflow-hidden transition-colors hover:bg-muted/50">
+                {event.cover_image_url && (
+                  <div className="relative w-32 shrink-0">
+                    <Image
+                      src={event.cover_image_url}
+                      alt={event.title}
+                      fill
+                      sizes="128px"
+                      className="object-cover"
+                    />
                   </div>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  <p>📅 {new Date(event.event_date).toLocaleString("ko-KR")}</p>
-                  {event.location && <p>📍 {event.location}</p>}
-                  {event.fee != null && event.fee > 0 && (
-                    <p>💰 {event.fee.toLocaleString()}원</p>
-                  )}
-                </CardContent>
+                )}
+                <div className="min-w-0 flex-1">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <CardTitle className="text-base">{event.title}</CardTitle>
+                      <Badge variant="secondary">
+                        {isJoined ? "참여" : "주최"}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="text-sm text-muted-foreground">
+                    <p>
+                      📅 {new Date(event.event_date).toLocaleString("ko-KR")}
+                    </p>
+                    {event.location && <p>📍 {event.location}</p>}
+                    {event.fee != null && event.fee > 0 && (
+                      <p>💰 {event.fee.toLocaleString()}원</p>
+                    )}
+                  </CardContent>
+                </div>
               </Card>
             </Link>
           ))}

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import { AttendanceSection } from "@/components/attendance-section";
@@ -65,6 +66,15 @@ export default async function EventDetailPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-8">
+      {event.cover_image_url && (
+        <Image
+          src={event.cover_image_url}
+          alt={event.title}
+          width={600}
+          height={300}
+          className="mb-4 w-full rounded-lg object-cover"
+        />
+      )}
       <Card className="mb-4">
         <CardHeader>
           <CardTitle>{event.title}</CardTitle>

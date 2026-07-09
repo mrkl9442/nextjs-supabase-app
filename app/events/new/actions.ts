@@ -22,6 +22,7 @@ export async function createEventAction(input: CreateEventInput) {
       description: validated.description ?? null,
       capacity: validated.capacity ?? null,
       fee: validated.fee ?? 0,
+      cover_image_url: validated.cover_image_url ?? null,
     })
     .select("id")
     .single();

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { createEventSchema, type CreateEventInput } from "@/lib/schemas";
 import { createEventAction } from "@/app/events/new/actions";
+import { createClient } from "@/lib/supabase/client";
+import { uploadCoverImage } from "@/lib/events/cover-image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +14,10 @@ import { Button } from "@/components/ui/button";
 
 export function CreateEventForm() {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
+    null
+  );
 
   const {
     register,
@@ -21,10 +27,34 @@ export function CreateEventForm() {
     resolver: zodResolver(createEventSchema),
   });
 
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setCoverImageFile(file);
+
+    if (!file) {
+      setCoverImagePreview(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setCoverImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const onSubmit = async (data: CreateEventInput) => {
     setServerError(null);
     try {
-      await createEventAction(data);
+      let cover_image_url: string | undefined;
+      if (coverImageFile) {
+        const supabase = createClient();
+        const { data: claims } = await supabase.auth.getClaims();
+        if (!claims?.claims) throw new Error("로그인이 필요합니다");
+        cover_image_url = await uploadCoverImage(
+          supabase,
+          claims.claims.sub,
+          coverImageFile
+        );
+      }
+      await createEventAction({ ...data, cover_image_url });
     } catch (err) {
       setServerError(
         err instanceof Error ? err.message : "오류가 발생했습니다"
@@ -39,6 +69,24 @@ export function CreateEventForm() {
           <CardTitle className="text-base">이벤트 정보</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="cover_image">대표 이미지</Label>
+            {coverImagePreview && (
+              // eslint-disable-next-line @next/next/no-img-element -- 로컬 파일 미리보기용 data URL이라 next/image 최적화 대상이 아님
+              <img
+                src={coverImagePreview}
+                alt="대표 이미지 미리보기"
+                className="mb-2 h-40 w-full rounded-md object-cover"
+              />
+            )}
+            <Input
+              id="cover_image"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleCoverImageChange}
+            />
+          </div>
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="title">제목 *</Label>
             <Input

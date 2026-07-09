@@ -7,6 +7,7 @@ export interface Event {
   description: string | null;
   capacity: number | null;
   fee: number | null;
+  cover_image_url: string | null;
   created_at: string;
 }
 

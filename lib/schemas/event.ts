@@ -11,6 +11,7 @@ export const createEventSchema = z.object({
     .positive("정원은 1명 이상이어야 합니다")
     .optional(),
   fee: z.number().int().min(0, "참여비는 0원 이상이어야 합니다").optional(),
+  cover_image_url: z.string().url().optional(),
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
