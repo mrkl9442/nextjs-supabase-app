@@ -43,3 +43,10 @@ next-env.d.ts
 
 # shrimp task manager data (local dev tool)
 shrimp_data/
+
+# local MCP config (contains machine-specific paths)
+.mcp.json
+
+# playwright test artifacts
+.playwright-mcp/
+test-results/
