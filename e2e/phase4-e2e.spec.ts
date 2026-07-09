@@ -4,9 +4,9 @@ import { test, expect } from "@playwright/test";
 // Google OAuth 특성상 인증 후 흐름은 미들웨어·리다이렉트·UI 렌더링으로 검증
 
 test.describe("사용자 여정 — 이벤트 생성 플로우", () => {
-  test("랜딩 → Sign in → 로그인 페이지 도달", async ({ page }) => {
+  test("랜딩 → 로그인 → 로그인 페이지 도달", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Sign in" }).click();
+    await page.getByRole("link", { name: "로그인" }).click();
     await expect(page).toHaveURL(/\/auth\/login/);
     await expect(page.getByText("Google로 계속하기")).toBeVisible();
   });
@@ -75,7 +75,7 @@ test.describe("모바일 뷰포트 렌더링", () => {
   test("모바일 — 랜딩 페이지 정상 렌더링", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "로그인" })).toBeVisible();
   });
 
   test("모바일 — 로그인 페이지 Google 버튼 접근 가능", async ({ page }) => {

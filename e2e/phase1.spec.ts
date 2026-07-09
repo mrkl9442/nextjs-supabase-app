@@ -13,9 +13,9 @@ test.describe("랜딩 페이지", () => {
     ).toBeVisible();
   });
 
-  test("헤더에 Sign in 링크가 노출된다", async ({ page }) => {
+  test("헤더에 로그인 링크가 노출된다", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "로그인" })).toBeVisible();
   });
 });
 
@@ -31,8 +31,8 @@ test.describe("인증 페이지", () => {
 
   test("이메일 없이 로그인 시도 시 에러가 표시된다", async ({ page }) => {
     await page.goto("/auth/login");
-    // Login 버튼 클릭 (이메일 미입력)
-    await page.getByRole("button", { name: "Login" }).click();
+    // 로그인 버튼 클릭 (이메일 미입력)
+    await page.getByRole("button", { name: "로그인" }).click();
     // 브라우저 native validation 또는 폼 에러 확인
     const emailInput = page.locator('input[type="email"]');
     // HTML5 native validation: input:invalid 상태가 됨
@@ -44,7 +44,7 @@ test.describe("인증 페이지", () => {
 
   test("회원가입 페이지 렌더링", async ({ page }) => {
     await page.goto("/auth/sign-up");
-    await expect(page.getByText("Create a new account")).toBeVisible();
+    await expect(page.getByText("새 계정을 생성하세요")).toBeVisible();
   });
 
   test("회원가입 페이지에 Google 버튼이 있다", async ({ page }) => {
