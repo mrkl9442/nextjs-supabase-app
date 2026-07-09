@@ -141,6 +141,9 @@ export default async function EventManagePage({ params }: Props) {
           <Button variant="outline" asChild>
             <Link href={`/events/${id}/carpool`}>🚗 카풀 배정</Link>
           </Button>
+          <Button variant="outline" asChild className="col-span-2">
+            <Link href={`/events/${id}/edit`}>✏️ 이벤트 정보 수정</Link>
+          </Button>
         </div>
       </div>
 
