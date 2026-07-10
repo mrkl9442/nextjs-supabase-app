@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { EventTabs } from "@/components/event-tabs";
 
@@ -32,7 +34,16 @@ export default async function EventLayout({ children, params }: Props) {
               {event.title}
             </p>
           )}
-          <EventTabs tabs={tabs} />
+          <div className="flex items-center gap-1">
+            <Link
+              href="/dashboard"
+              aria-label="목록"
+              className="flex items-center rounded-t-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" />
+            </Link>
+            <EventTabs tabs={tabs} />
+          </div>
         </div>
       </div>
       {children}
